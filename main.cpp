@@ -60,15 +60,18 @@ void add_node(Node **start, int value)
 void print_list(Node *node)
 {
 	Node *first_node = node;
-	printf("%d ", node->data);
+  cout << node->data << "->";
+	//printf("%d ", node->data);
 	node = node->next; 
 	
 	while(node != NULL) {
 		if(node == first_node) break;
-		printf("%d ", node->data); 
+    cout << node->data << "->";
+		//printf("%d ", node->data); 
 		node = node->next;
 	}
-	printf("%d\n", node->data);
+	//printf("%d\n", node->data);
+  cout << node->data << "\n";
 }
 
 void free_list(Node *node) //不確定有沒有用到?
@@ -147,8 +150,8 @@ int main(int argc, char* argv[])
 	// create first node "head"
 	Node *head = NULL;
   int JoinPeople = 0;
-  int len = list_length(head);
-  
+  //int len = list_length(head);
+
   cout << "炸死倒楣鬼遊戲開始\n總共幾人參加?(請輸入4-10): ";
   cin >> JoinPeople;
   //joiner_list(JoinPeople);
@@ -159,35 +162,26 @@ int main(int argc, char* argv[])
     add_node(&head, newData);
     newData += 1;
   }
-  
-  for(int i=0 ; i <= JoinPeople ; i++){
 
-    if( head == head -> next ){
-      cout << "最後生存者為:" << head -> data << endl;
-      break;
-    }
+  //如果人數剩下超過1人(head!=tail)
+  while( head != head -> next ){
+    //目前的 circular linked list 內容
+    cout << "Before: ";
+    print_list(head);
     
-    //deleteNode(&head, SendPeople, JoinPeople);
-    else{
-      //目前的 circular linked list 內容
-      cout << "Before: ";
-      print_list(head);
-      
-      int SendPeople = 0;
-      cout << "炸彈在" << head -> data << "號手上，要往下傳幾人: ";
-      // random 往下傳的人數 0-3，還沒寫完～～
-      //int SendPeople = rand() % 4;
-      cin >> SendPeople ;
-      
-      head = bomb(head, SendPeople);
-      cout << "After: ";
-      print_list(head); 
-      cout << "------" << endl;
-    }
-  
+    int SendPeople = 0;
+    cout << "炸彈在" << head -> data << "號手上，要往下傳幾人: ";
+    // random 往下傳的人數 0-3，還沒寫完～～
+    //int SendPeople = rand() % 4;
+    cin >> SendPeople ;
+    
+    head = bomb(head, SendPeople);
+    cout << "After: ";
+    print_list(head); 
+    cout << "------" << endl;
   }
+  cout << "最後生存者為:" << head -> data << endl;
 
-  //head = Delete(head,deleteIndex);
 	free_list(head);  //結束程式前，釋出記憶體
 	
 	return 0;	
