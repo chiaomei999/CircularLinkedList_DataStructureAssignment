@@ -171,9 +171,10 @@ int main(int argc, char* argv[])
     
     int SendPeople = 0;
     cout << "炸彈在" << head -> data << "號手上，要往下傳幾人: ";
-    // random 往下傳的人數 0-3，還沒寫完～～
-    //int SendPeople = rand() % 4;
-    cin >> SendPeople ;
+    
+    // random 往下傳的人數 0-3
+    SendPeople = rand() % 4;
+    cout << SendPeople << endl;
     
     head = bomb(head, SendPeople);
     cout << "After: ";
