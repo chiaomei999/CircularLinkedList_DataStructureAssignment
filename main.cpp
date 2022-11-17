@@ -115,25 +115,29 @@ node *bomb(struct node * head, int SendPeople)
   int r = rand() % 5;  //0.4的爆炸機率，餘數 {0,1} 爆炸
   struct node *prev = head, *temp = prev -> next;
 
-  while(count < SendPeople)
+  //傳炸彈
+  while(count < SendPeople-1) //0<2-1  2-1結束
   {
-    prev = prev -> next;
-    temp = temp -> next;
-    count += 1;
+    prev = prev -> next; //1指向2
+    temp = temp -> next; //2指向3 死者將為3
+    head = prev; //head = 2
+    count += 1; //1
   }
-  
-  if( r <=1 ) //爆炸
+
+  //引爆與否
+  if( r <=1 ) //沒爆
   {
-    head = prev;
-    return head;
+    prev = temp; //prev 2指向3
+    temp = temp -> next; //temp 3指向4
+    head = prev; //head 2指向3
+    return head; //head = 3 從3開始繼續傳
   }
-  else //沒爆
+  else //爆炸 (3消失)
   {
-    prev -> next = temp -> next;
-    prev = prev -> next;
-    temp = prev -> next;
-    head = prev;
-    return head;
+    head = temp -> next; //head 2指向4
+    prev -> next = temp -> next; //prev 2指向4
+    temp = prev -> next; //temp 3指向5
+    return head; //從 4 開始傳球
   }
 }
 
@@ -166,12 +170,18 @@ int main(int argc, char* argv[])
     //int SendPeople = rand() % 4;
 
     cin >> SendPeople ;
-    //deleteNode(&head, SendPeople, JoinPeople);
-    head = bomb(head, SendPeople);
+
+    if( SendPeople >= JoinPeople){
+      break;
+    }
     
-    cout << "After: ";
-    print_list(head); 
-    cout << "------" << endl;
+    //deleteNode(&head, SendPeople, JoinPeople);
+    else{
+      head = bomb(head, SendPeople);
+      cout << "After: ";
+      print_list(head); 
+      cout << "------" << endl;
+    }
   
   }
 
