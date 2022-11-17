@@ -147,6 +147,7 @@ int main(int argc, char* argv[])
 	// create first node "head"
 	Node *head = NULL;
   int JoinPeople = 0;
+  int len = list_length(head);
   
   cout << "炸死倒楣鬼遊戲開始\n總共幾人參加?(請輸入4-10): ";
   cin >> JoinPeople;
@@ -159,24 +160,25 @@ int main(int argc, char* argv[])
     newData += 1;
   }
   
-  for(int i=0 ; i<JoinPeople ; i++){
-    //目前的 circular linked list 內容
-    cout << "Before: ";
-    print_list(head);
+  for(int i=0 ; i <= JoinPeople ; i++){
 
-    int SendPeople = 0;
-    cout << "炸彈在" << head -> data << "號手上，要往下傳幾人: ";
-    // random 往下傳的人數 0-3，還沒寫完～～
-    //int SendPeople = rand() % 4;
-
-    cin >> SendPeople ;
-
-    if( SendPeople >= JoinPeople){
+    if( head == head -> next ){
+      cout << "最後生存者為:" << head -> data << endl;
       break;
     }
     
     //deleteNode(&head, SendPeople, JoinPeople);
     else{
+      //目前的 circular linked list 內容
+      cout << "Before: ";
+      print_list(head);
+      
+      int SendPeople = 0;
+      cout << "炸彈在" << head -> data << "號手上，要往下傳幾人: ";
+      // random 往下傳的人數 0-3，還沒寫完～～
+      //int SendPeople = rand() % 4;
+      cin >> SendPeople ;
+      
       head = bomb(head, SendPeople);
       cout << "After: ";
       print_list(head); 
