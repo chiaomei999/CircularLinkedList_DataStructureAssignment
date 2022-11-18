@@ -9,16 +9,22 @@ using namespace std;
 
 typedef struct node
 {
-	int data;
-	struct node *next;
+  public:
+  	int data;
+  	struct node *next;
+    struct node *head;
+    struct node *dead;
+    int len;
 }Node;
 
 void add_node(Node **start, int value);
 void print_list(Node *node);
 void free_list(Node *node);
 int list_length(Node *head);
-void deleteNode(Node** head, int key, int length);
-node *bomb(struct node* head, int SendPeople);
+node *bomb(Node *head, int SendPeople, Node *dead, int len);
+node *dead_node(Node *dead, int newvalue);
+
+
 
 /*
 node joiner_list(int JoinPeople);
@@ -57,6 +63,7 @@ void add_node(Node **start, int value)
 	}
 }
 
+
 void print_list(Node *node)
 {
 	Node *first_node = node;
@@ -94,26 +101,38 @@ void free_list(Node *node) //不確定有沒有用到?
 	}
 }
 
-int list_length(Node *head)
+int list_length(Node *head) //目前還是錯ㄉ
 {
   // function to calculate the current length of the circular linked list
   Node *t;
+  t = head -> next; //head = 1, t = 2
   int i = 0;
-  if (head == NULL){
-    // handle underflow condition
-    return 0;
+  /*while( t != head )
+  {
+    head = head -> next; //當 head 指到1
+    i += 1;
   }
+  */
+  while (t != head -> next)
+  {
+    t = t -> next;
+    i++;
+  }
+  return i;
+  
+
+  /*
   t = head -> next;
   do
   {
     // handle traversal through the list t = t -> next; i++; 
     return i;
   }while (t != head -> next);
+  */
 }
 
-node *bomb(struct node * head, int SendPeople)
+node *bomb(Node *head, int SendPeople, Node *dead, int len)
 {
-  int len = list_length(head);
   int count = 0;
   int r = rand() % 5;  //0.4的爆炸機率，餘數 {0,1} 爆炸
   struct node *prev = head, *temp = prev -> next;
@@ -133,28 +152,53 @@ node *bomb(struct node * head, int SendPeople)
     prev = temp; //prev 2指向3
     temp = temp -> next; //temp 3指向4
     head = prev; //head 2指向3
+    
+    cout << "炸彈沒有爆炸，還剩" << len << "位玩家" << endl;
     return head; //head = 3 從3開始繼續傳
   }
   else //爆炸 (3消失)
   {
+    int len = list_length(head); //人數不對
     head = temp -> next; //head 2指向4
     prev -> next = temp -> next; //prev 2指向4
-    temp = prev -> next; //temp 3指向5
+
+    len -= 1;
+    cout << "●炸彈爆炸● "　<< temp -> data << "號出局，還剩" << len << "人" << endl;
+
+    //把死者存入死亡筆記本
+    //dead_node(dead, temp -> data);  這行跟這個function出問題
+
+    temp = prev -> next; //temp 3指向5, 死者3消失
+
     return head; //從 4 開始傳球
   }
+}
+
+node *dead_node(Node *dead, int newvalue) //還沒改完
+{
+	Node *newdead_node = NULL;
+  dead -> next = newdead_node;
+	newdead_node -> data = newvalue;
+	newdead_node -> next = NULL;
+
+  return dead;	
 }
 
 
 int main(int argc, char* argv[])
 {
 	// create first node "head"
-	Node *head = NULL;
+	Node *head = NULL; //存生者
+  Node *dead = NULL; //存死者
   int JoinPeople = 0;
-  //int len = list_length(head);
+  int PlayCount = 0; //遊戲回合數
+  int len;
 
   cout << "炸死倒楣鬼遊戲開始\n總共幾人參加?(請輸入4-10): ";
   cin >> JoinPeople;
   //joiner_list(JoinPeople);
+  //len = JoinPeople;
+  //cout << "len now is : " << len << endl; 
 
   //生成Circular Linked List
   int newData = 1;
@@ -162,26 +206,28 @@ int main(int argc, char* argv[])
     add_node(&head, newData);
     newData += 1;
   }
-
+    
   //如果人數剩下超過1人(head!=tail)
   while( head != head -> next ){
     //目前的 circular linked list 內容
-    cout << "Before: ";
+    PlayCount += 1;
+    cout << "目前玩家順序: ";
     print_list(head);
     
     int SendPeople = 0;
-    cout << "炸彈在" << head -> data << "號手上，要往下傳幾人: ";
+    SendPeople = rand() % 4;     // random 往下傳的人數 0-3
+    cout << "第" << PlayCount << "回合，由" << head -> data << "開始，往下傳給" << SendPeople << "位玩家" << endl;
+
+    len = list_length(head); //數不到正確人數
     
-    // random 往下傳的人數 0-3
-    SendPeople = rand() % 4;
-    cout << SendPeople << endl;
-    
-    head = bomb(head, SendPeople);
-    cout << "After: ";
-    print_list(head); 
+    head = bomb(head, SendPeople, dead, len);
+    //cout << "After: ";
+    //print_list(head); 
     cout << "------" << endl;
   }
-  cout << "最後生存者為:" << head -> data << endl;
+  cout << "最後生存+獲勝者:" << head -> data << endl;
+  cout << "死亡筆記本: ";
+  print_list(dead);
 
 	free_list(head);  //結束程式前，釋出記憶體
 	
