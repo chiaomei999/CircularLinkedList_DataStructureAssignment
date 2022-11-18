@@ -20,10 +20,9 @@ typedef struct node
 void add_node(Node **start, int value);
 void print_list(Node *node);
 void free_list(Node *node);
-int list_length(Node *head);
+int countNodes(Node* head);
 node *bomb(Node *head, int SendPeople, Node *dead, int len);
 node *dead_node(Node *dead, int newvalue);
-
 
 
 /*
@@ -63,7 +62,6 @@ void add_node(Node **start, int value)
 	}
 }
 
-
 void print_list(Node *node)
 {
 	Node *first_node = node;
@@ -101,35 +99,20 @@ void free_list(Node *node) //不確定有沒有用到?
 	}
 }
 
-int list_length(Node *head) //目前還是錯ㄉ
+int countNodes(Node* head)
 {
-  // function to calculate the current length of the circular linked list
-  Node *t;
-  t = head -> next; //head = 1, t = 2
-  int i = 0;
-  /*while( t != head )
-  {
-    head = head -> next; //當 head 指到1
-    i += 1;
-  }
-  */
-  while (t != head -> next)
-  {
-    t = t -> next;
-    i++;
-  }
-  return i;
+    Node* temp = head;
+    int result = 0;
+    if (head != NULL) {
+        do {
+            temp = temp->next;
+            result++;
+        } while (temp != head);
+    }
   
-
-  /*
-  t = head -> next;
-  do
-  {
-    // handle traversal through the list t = t -> next; i++; 
-    return i;
-  }while (t != head -> next);
-  */
+    return result;
 }
+
 
 node *bomb(Node *head, int SendPeople, Node *dead, int len)
 {
@@ -153,17 +136,17 @@ node *bomb(Node *head, int SendPeople, Node *dead, int len)
     temp = temp -> next; //temp 3指向4
     head = prev; //head 2指向3
     
-    cout << "炸彈沒有爆炸，還剩" << len << "位玩家" << endl;
+    cout << "炸彈沒有爆炸，還剩" << countNodes(head) << "人" << endl;
     return head; //head = 3 從3開始繼續傳
   }
   else //爆炸 (3消失)
   {
-    int len = list_length(head); //人數不對
+    //int len = list_length(head); //人數不對
     head = temp -> next; //head 2指向4
     prev -> next = temp -> next; //prev 2指向4
 
     len -= 1;
-    cout << "●炸彈爆炸● "　<< temp -> data << "號出局，還剩" << len << "人" << endl;
+    cout << "●炸彈爆炸● "　<< temp -> data << "號出局，還剩" << countNodes(head) << "人" << endl;
 
     //把死者存入死亡筆記本
     //dead_node(dead, temp -> data);  這行跟這個function出問題
@@ -197,8 +180,6 @@ int main(int argc, char* argv[])
   cout << "炸死倒楣鬼遊戲開始\n總共幾人參加?(請輸入4-10): ";
   cin >> JoinPeople;
   //joiner_list(JoinPeople);
-  //len = JoinPeople;
-  //cout << "len now is : " << len << endl; 
 
   //生成Circular Linked List
   int newData = 1;
@@ -217,12 +198,8 @@ int main(int argc, char* argv[])
     int SendPeople = 0;
     SendPeople = rand() % 4;     // random 往下傳的人數 0-3
     cout << "第" << PlayCount << "回合，由" << head -> data << "開始，往下傳給" << SendPeople << "位玩家" << endl;
-
-    len = list_length(head); //數不到正確人數
     
     head = bomb(head, SendPeople, dead, len);
-    //cout << "After: ";
-    //print_list(head); 
     cout << "------" << endl;
   }
   cout << "最後生存+獲勝者:" << head -> data << endl;
