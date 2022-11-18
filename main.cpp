@@ -14,7 +14,6 @@ typedef struct node
   	struct node *next;
     struct node *head;
     struct node *dead;
-    int len;
     int JoinPeople;
     int DeadArr;
 }Node;
@@ -61,20 +60,17 @@ void print_list(Node *node)
 {
 	Node *first_node = node;
   cout << node->data << "->";
-	//printf("%d ", node->data);
 	node = node->next; 
 	
 	while(node != NULL) {
 		if(node == first_node) break;
     cout << node->data << "->";
-		//printf("%d ", node->data); 
 		node = node->next;
 	}
-	//printf("%d\n", node->data);
   cout << node->data << "\n";
 }
 
-void free_list(Node *node) //不確定有沒有用到?
+void free_list(Node *node)
 {
 	int total_node = 1;
 	Node *first = node;
@@ -138,10 +134,9 @@ node *bomb(Node *head, int SendPeople, Node *dead, int JoinPeople, int DeadArr[]
     head = temp -> next; //head 2指向4
     prev -> next = temp -> next; //prev 2指向4
 
-    cout << "●炸彈爆炸● "　<< temp -> data << "號出局，還剩" << countNodes(head) << "人" << endl;
+    cout << "QQ炸彈爆炸" << temp -> data << "號出局，還剩" << countNodes(head) << "人" << endl;
 
     //把死者存入死亡筆記本
-    //dead_node(dead, temp -> data);  這行跟這個function出問題
     dead_list( head, JoinPeople, temp -> data, DeadArr);
 
     temp = prev -> next; //temp 3指向5, 死者3消失
