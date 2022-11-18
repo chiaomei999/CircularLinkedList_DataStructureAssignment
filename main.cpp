@@ -15,29 +15,24 @@ typedef struct node
     struct node *head;
     struct node *dead;
     int len;
+    int JoinPeople;
+    int DeadArr;
 }Node;
 
 void add_node(Node **start, int value);
 void print_list(Node *node);
 void free_list(Node *node);
 int countNodes(Node* head);
-node *bomb(Node *head, int SendPeople, Node *dead, int len);
-node *dead_node(Node *dead, int newvalue);
+node *bomb(Node *head, int SendPeople, Node *dead, int JoinPeople, int DeadArr[10]);
+void dead_list(Node *head, int JoinPeople, int newDead, int DeadArr);
 
 
-/*
-node joiner_list(int JoinPeople);
-
-node joiner_list(int JoinPeople)
+void dead_list(Node *head, int JoinPeople, int newDead, int DeadArr[10])
 {
-  int newData = 1;
-  for( int i=0; i<JoinPeople ; i++ ){  
-    add_node(&head, newData);
-    newData += 1;
-  }
+  int index;
+  index = JoinPeople - countNodes(head); //死亡人數=參與遊戲人數-存活人數
+  DeadArr[index] = newDead;
 }
-*/
-
 
 void add_node(Node **start, int value)
 {
@@ -113,8 +108,7 @@ int countNodes(Node* head)
     return result;
 }
 
-
-node *bomb(Node *head, int SendPeople, Node *dead, int len)
+node *bomb(Node *head, int SendPeople, Node *dead, int JoinPeople, int DeadArr[])
 {
   int count = 0;
   int r = rand() % 5;  //0.4的爆炸機率，餘數 {0,1} 爆炸
@@ -141,30 +135,19 @@ node *bomb(Node *head, int SendPeople, Node *dead, int len)
   }
   else //爆炸 (3消失)
   {
-    //int len = list_length(head); //人數不對
     head = temp -> next; //head 2指向4
     prev -> next = temp -> next; //prev 2指向4
 
-    len -= 1;
     cout << "●炸彈爆炸● "　<< temp -> data << "號出局，還剩" << countNodes(head) << "人" << endl;
 
     //把死者存入死亡筆記本
     //dead_node(dead, temp -> data);  這行跟這個function出問題
+    dead_list( head, JoinPeople, temp -> data, DeadArr);
 
     temp = prev -> next; //temp 3指向5, 死者3消失
 
     return head; //從 4 開始傳球
   }
-}
-
-node *dead_node(Node *dead, int newvalue) //還沒改完
-{
-	Node *newdead_node = NULL;
-  dead -> next = newdead_node;
-	newdead_node -> data = newvalue;
-	newdead_node -> next = NULL;
-
-  return dead;	
 }
 
 
@@ -175,13 +158,13 @@ int main(int argc, char* argv[])
   Node *dead = NULL; //存死者
   int JoinPeople = 0;
   int PlayCount = 0; //遊戲回合數
-  int len;
+  int DeadArr[10] = {};
 
-  cout << "炸死倒楣鬼遊戲開始\n總共幾人參加?(請輸入4-10): ";
+  cout << "總共幾人參加?(請輸入4-10): ";
   cin >> JoinPeople;
-  //joiner_list(JoinPeople);
+  cout << "炸死倒楣鬼遊戲開始！" << endl << "-----" <<endl;
 
-  //生成Circular Linked List
+  //生成Circular Linked List 參加者序號與名單
   int newData = 1;
   for( int i=0; i<JoinPeople ; i++ ){  
     add_node(&head, newData);
@@ -199,15 +182,17 @@ int main(int argc, char* argv[])
     SendPeople = rand() % 4;     // random 往下傳的人數 0-3
     cout << "第" << PlayCount << "回合，由" << head -> data << "開始，往下傳給" << SendPeople << "位玩家" << endl;
     
-    head = bomb(head, SendPeople, dead, len);
+    head = bomb(head, SendPeople, dead, JoinPeople, DeadArr);
     cout << "------" << endl;
   }
   cout << "最後生存+獲勝者:" << head -> data << endl;
-  cout << "死亡筆記本: ";
-  print_list(dead);
+  cout << "死亡順序筆記本: ";
+  for( int i=1; i <= JoinPeople -1; i++)
+    {
+        cout << DeadArr[i] << "->";
+    }
 
 	free_list(head);  //結束程式前，釋出記憶體
-	
 	return 0;	
 }
 
